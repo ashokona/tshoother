@@ -1,0 +1,81 @@
+{
+    "step1": {
+        "name": "List Hosted Zone",
+        "client": "route53",
+        "method": "list_hosted_zones_by_name",
+        "value": "HostedZones",
+        "inputs": [
+            {
+                "reference": "env",
+                "key": "DNSName",
+                "value": "DOMAIN_NAME"
+            }, 
+            {
+                "reference": null,
+                "key": "MaxItems",
+                "value": "1"
+            }
+        ],
+        "filters": [
+            {
+                "type": "substring",
+                "reference": "env",
+                "key": "Name",
+                "value": "DOMAIN_NAME"
+            }
+        ],
+        "outputs": {
+            "Id": ""
+        }
+    },
+    "step2": {
+        "name": "List Resource Record Sets",
+        "client": "route53",
+        "method": "list_resource_record_sets",
+        "value": "ResourceRecordSets",
+        "filters": [
+            {
+                "type": "substring",
+                "reference": "env",
+                "key": "Name",
+                "value": "DOMAIN_NAME"
+            }
+            {
+                "type": "substring",
+                "key": "Type",
+                "value": "A"
+            }
+        ],
+        "inputs": [
+            {
+                "reference": "step1",
+                "key": "HostedZoneId",
+                "value": "Id"
+            }
+        ],
+        "outputs": {
+            "DNSName": ""
+        }
+    },
+    "step3": {
+        "name": "List Distributions",
+        "client": "cloudfront",
+        "method": "list_distributions",
+        "value": "Items",
+        "filters": [
+            {
+                "type": "substring",
+                "key": "DomainName",
+                "value": "d8nhxvlt8tcuc.cloudfront.net"
+            }
+        ],
+        "outputs": {
+            "Id": "",
+            "Status": "",
+            "Aliases": "",
+            "ViewerCertificate": "",
+            "AliasICPRecordals": ""
+        }
+    }
+}
+
